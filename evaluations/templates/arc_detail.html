@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load arc_tags %}
+{% block content %}
+<h2>ARC Task: <code>{{ task_id }}</code> <small>({{ split }})</small></h2>
+
+<style>
+.arc-grid {
+  border-collapse: collapse;
+  margin: 0.5rem 0 1.5rem 0;
+}
+.arc-grid td {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid #2223;
+}
+.arc-legend { display: inline-block; margin-left: .5rem; }
+.arc-cell { display: inline-block; width: 1rem; height: 1rem; border: 1px solid #0002; vertical-align: middle; }
+</style>
+
+<!-- Combo para seleccionar el par de train -->
+<form method="get" action="">
+  <label for="i"><b>Selecciona un par de entrenamiento</b> (0 a {{ train_count|add:"-1" }})</label>
+  <select id="i" name="i" onchange="this.form.submit()">
+    {% for p in train_pairs %}
+      <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == sel_i %}selected{% endif %}>
+        train[{{ forloop.counter0 }}] — {{ p.input|length }}x{{ p.input.0|length }} → {{ p.output|length }}x{{ p.output.0|length }}
+      </option>
+    {% endfor %}
+  </select>
+  <small>Al cambiar, se actualiza la vista previa del input/output de ese par.</small>
+</form>
+
+<hr>
+
+<!-- Vista previa del par seleccionado -->
+{% if selected_train %}
+<article>
+  <h3>Train seleccionado: <code>train[{{ sel_i }}]</code></h3>
+  <div style="display:flex;gap:2rem;align-items:flex-start;flex-wrap:wrap;">
+    <div>
+      <h4>Input</h4>
+      <div style="overflow-x:auto;max-width:100%;">
+        <table class="arc-grid">
+          <tbody>
+            {% for row in selected_train.input %}
+            <tr>
+              {% for v in row %}
+              <td style="background: {{ v|cell_color }}" title="{{ v }}"></td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <h4>Output</h4>
+      <div style="overflow-x:auto;max-width:100%;">
+        <table class="arc-grid">
+          <tbody>
+            {% for row in selected_train.output %}
+            <tr>
+              {% for v in row %}
+              <td style="background: {{ v|cell_color }}" title="{{ v }}"></td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</article>
+{% endif %}
+
+<hr>
+
+<!-- Evaluación con modelo seleccionado -->
+<h3>Evaluar modelo (Leave-One-Out usando train[{{ sel_i }}])</h3>
+
+<form method="post" action="{% url 'arc_evaluate' task_id %}">
+  {% csrf_token %}
+  <input type="hidden" name="i" value="{{ sel_i }}">
+
+  <div class="grid">
+    <div>
+      <label for="model_id">Modelo (LM Studio)</label>
+      <select id="model_id" name="model_id" required>
+        {% for mid in models %}
+          <option value="{{ mid }}" {% if mid == selected_model %}selected{% endif %}>{{ mid }}</option>
+        {% empty %}
+          <option disabled>No hay modelos disponibles. Inicia LM Studio y carga uno.</option>
+        {% endfor %}
+      </select>
+      {% if lm_error %}
+        <small>Error al listar modelos: {{ lm_error }}</small>
+      {% endif %}
+      <small>Se guardará tu selección para próximas páginas.</small>
+    </div>
+    <div>
+      <label>Par objetivo</label>
+      <input type="text" value="train[{{ sel_i }}]" disabled>
+    </div>
+  </div>
+
+  <button type="submit">Evaluar con modelo</button>
+</form>
+
+<p style="margin-top:1rem;">
+  <a href="{% url 'arc_index' %}">&larr; Volver al listado</a>
+</p>
+{% endblock %}

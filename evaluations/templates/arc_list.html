@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>ARC Tasks</h2>
+<p>Buscando en <code>data/arcagi2/</code></p>
+
+<table>
+  <thead>
+    <tr><th>Task ID</th><th>Split</th><th>Acción</th></tr>
+  </thead>
+  <tbody>
+    {% for t in tasks %}
+      <tr>
+        <td><code>{{ t.task_id }}</code></td>
+        <td>{{ t.split }}</td>
+        <td><a href="{% url 'arc_detail' t.task_id %}">ver</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="3">No se encontraron tareas. Coloca JSONs en <code>data/arcagi2/train/</code>.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

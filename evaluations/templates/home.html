@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if error %}
+<article class="contrast">
+  <h3>Conexión con LM Studio</h3>
+  <p>{{ error }}</p>
+  <p>Abre LM Studio ➜ pestaña <b>Developer</b> ➜ <b>Start Server</b> (puerto 1234 por defecto) y asegúrate de tener un modelo cargado.</p>
+</article>
+{% else %}
+<form>
+  <label for="modelId">Modelo</label>
+  <select id="modelId" name="model_id" required>
+    {% for m in models %}
+      <option value="{{ m.id }}">{{ m.id }}</option>
+    {% empty %}
+      <option disabled>No hay modelos cargados en LM Studio</option>
+    {% endfor %}
+  </select>
+  <small>Si no ves modelos, carga uno en LM Studio y reinicia el servidor local.</small>
+</form>
+
+<details>
+  <summary>Ver JSON de modelos (endpoint interno)</summary>
+  <a role="button" href="{% url 'api_models_list' %}" target="_blank">/api/models</a>
+</details>
+{% endif %}
+<hr>
+<a role="button" href="{% url 'arc_index' %}">Ir a lista de tareas ARC</a>
+{% endblock %}

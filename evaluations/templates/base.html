@@ -1,0 +1,56 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>ARC-AGI Bench</title>
+
+    <!-- PicoCSS (estilo base) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+
+    <!-- Tu CSS local -->
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  </head>
+  <body class="container">
+    <header style="margin-bottom: .75rem">
+      <hgroup>
+        <h1>ARC-AGI Bench</h1>
+        <p>Evaluación de modelos (LM Studio) sobre tareas ARC</p>
+      </hgroup>
+    </header>
+
+    <div class="layout">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <h3>Navegación</h3>
+        <nav class="nav">
+          <a href="{% url 'home' %}" class="{% if request.path == '/' %}active{% endif %}">Inicio</a>
+          <a href="{% url 'arc_index' %}" class="{% if request.path|slice:':5' == '/arc/' or request.path == '/arc' %}active{% endif %}">
+            Tareas ARC
+          </a>
+          <a href="{% url 'api_models_list' %}" target="_blank">API: /api/models</a>
+        </nav>
+
+        <hr>
+
+        <details>
+          <summary>Estado LM Studio</summary>
+          <p>
+            Asegúrate de tener el servidor activo en
+            <code>http://localhost:1234/v1</code> y al menos un modelo cargado.
+          </p>
+        </details>
+      </aside>
+
+      <!-- CONTENIDO PRINCIPAL -->
+      <main>
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+
+    <footer style="margin-top:1rem">
+      <small>LM Studio + Django — Demo</small>
+    </footer>
+  </body>
+</html>

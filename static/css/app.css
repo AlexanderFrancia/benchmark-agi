@@ -1,0 +1,63 @@
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+}
+
+.sidebar {
+  position: sticky;
+  top: 1rem;
+  align-self: start;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.sidebar h3 {
+  margin: 0 0 .5rem 0;
+}
+
+.nav a {
+  display: block;
+  padding: .5rem .6rem;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.nav a:hover { background: #eef2ff; }
+.nav a.active { background: #e0e7ff; font-weight: 600; }
+
+/* Grids ARC */
+.arc-grid {
+  border-collapse: collapse;
+  margin: 0.5rem 0 1.5rem 0;
+}
+
+.arc-grid td {
+  aspect-ratio: 1 / 1;
+  width: 1.5rem;      
+  max-width: 2.2vw;   
+  padding: 0;
+  border: 1px solid #2223;
+}
+
+.arc-grid td[title]::after {
+  content: attr(title);
+  display: none;
+}
+
+.arc-grid td:hover::after {
+  display: block;
+  position: absolute;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 2px 4px;
+  font-size: 0.7rem;
+  z-index: 100;
+}
