@@ -2,3 +2,10 @@ python manage.py runserver
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+python manage.py makemigrations
+python manage.py makemigrations evaluations  
+
+Get-ChildItem -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Force
+Get-ChildItem -Recurse -Include *.pyc,*.pyo | Remove-Item -Force
+
+export PYTHONDONTWRITEBYTECODE=1

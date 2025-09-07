@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from .runs import EvaluationRun, EvaluationResult
+
+admin.site.register(EvaluationRun)
+admin.site.register(EvaluationResult)
+

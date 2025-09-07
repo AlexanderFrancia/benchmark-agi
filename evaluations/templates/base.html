@@ -30,15 +30,9 @@
           <a href="{% url 'arc_index' %}" class="{% if request.path|slice:':5' == '/arc/' or request.path == '/arc' %}active{% endif %}">
             Tareas ARC
           </a>
-          <a href="{% url 'api_models_list' %}" target="_blank">API: /api/models</a>
         </nav>
 
         <hr>
-
-        <form method="post" action="{% url 'arc_evaluate_dataset' %}">
-          {% csrf_token %}
-          <button id="btn-eval-all" type="submit">Evaluar TODOS los ARC</button>
-        </form>
 
         <details>
           <summary>Estado LM Studio</summary>
@@ -49,14 +43,9 @@
         </details>
       </aside>
 
-      <!-- CONTENIDO PRINCIPAL -->
       <main>
         {% block content %}{% endblock %}
       </main>
     </div>
-
-    <footer style="margin-top:1rem">
-      <small>LM Studio + Django — Demo</small>
-    </footer>
   </body>
 </html>
