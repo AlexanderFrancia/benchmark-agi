@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+<h2>Evaluación global (live)</h2>
+<p><b>Modelo:</b> <code>{{ run.model_id }}</code> | <b>Nota:</b> {{ run.note }}</p>
+
+<!-- Panel que se actualiza cada 2s -->
+<div
+  id="live-panel"
+  hx-get="{% url 'arc_run_status' run.id %}"
+  hx-trigger="load, every 2s"
+  hx-swap="innerHTML">
+  <!-- Se rellenará con el parcial -->
+  Cargando estado...
+</div>
+
+<p style="margin-top:1rem;">
+  <a href="{% url 'arc_index' %}">&larr; Volver al listado</a>
+</p>
+
+{% endblock %}

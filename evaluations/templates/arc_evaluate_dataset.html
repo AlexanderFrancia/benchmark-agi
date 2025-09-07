@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Evaluación global — Dataset ARC (train LOO, K=1)</h2>
+
+<p><b>Modelo:</b> <code>{{ model_id }}</code></p>
+<p>
+  <b>Accuracy Global (Cell Accuracy):</b> {{ global_acc_pct|floatformat:2 }} %<br>
+  <b>Tareas evaluadas:</b> {{ num_tasks }}<br>
+  <b>Pares train evaluados:</b> {{ num_pairs }}
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Task ID</th>
+      <th>Split</th>
+      <th>Pairs (train)</th>
+      <th>Accuracy (Cell Acc)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in results %}
+    <tr>
+      <td>{{ r.task_id }}</td>
+      <td>{{ r.split }}</td>
+      <td>{{ r.pairs }}</td>
+      <td>{{ r.acc_pct|floatformat:2 }} %</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<p style="margin-top:1rem;">
+  <a href="{% url 'arc_index' %}">&larr; Volver al listado</a>
+</p>
+
+{% endblock %}

@@ -5,6 +5,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>ARC-AGI Bench</title>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 
     <!-- PicoCSS (estilo base) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
@@ -33,6 +34,11 @@
         </nav>
 
         <hr>
+
+        <form method="post" action="{% url 'arc_evaluate_dataset' %}">
+          {% csrf_token %}
+          <button id="btn-eval-all" type="submit">Evaluar TODOS los ARC</button>
+        </form>
 
         <details>
           <summary>Estado LM Studio</summary>

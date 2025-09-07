@@ -107,7 +107,7 @@ def build_loo_messages_compact(task_data: dict, target_index: int, max_examples:
     "Eres un resolutor de tareas ARC (Abstraction and Reasoning Corpus). "
     "Debes INFERIR la regla que transforma cada input en su output, usando los ejemplos dados. "
     "Aplica esa MISMA regla al input objetivo.\n\n"
-    "⚠️ Importante:\n"
+    "Importante:\n"
     "- Piensa paso a paso INTERNAMENTE (no lo muestres).\n"
     "- Usa TODOS los ejemplos: tu salida debe ser consistente con ellos.\n"
     "- La respuesta final debe ser SOLO un objeto JSON de UNA línea con esta forma exacta:\n"

@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .services.lmstudio import list_models, LMStudioError
+from .core.lmstudio import list_models, LMStudioError
 
 @api_view(["GET"])
 def models_list(request):
