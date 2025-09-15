@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Herramientas de Maze</h2>
+
+{% if message %}
+  <article class="success" style="margin-bottom: .75rem;">
+    {{ message }}
+  </article>
+{% endif %}
+
+<section style="margin-bottom:1rem;">
+  <h3>Conversión rápida</h3>
+  <p>Carpetas detectadas (si existen):</p>
+  <ul>
+    {% for p in existing_roots %}
+      <li><code>{{ p }}</code></li>
+    {% empty %}
+      <li>(No se detectaron carpetas por defecto. Crea <code>maze/</code>, <code>perfect/</code> o <code>imperfect/</code> en la raíz.)</li>
+    {% endfor %}
+  </ul>
+
+  <form method="post" action="{% url 'maze_convert_autodiscover' %}">
+    {% csrf_token %}
+    <button type="submit">⏱️ Convertir desde carpetas detectadas</button>
+  </form>
+</section>
+
+<section style="margin-bottom:1rem;">
+  <h3>Conversión desde carpeta específica</h3>
+  <form method="post" action="{% url 'maze_convert_dir' %}" style="display:flex; gap:.5rem; align-items:center; flex-wrap: wrap;">
+    {% csrf_token %}
+    <label>Carpeta</label>
+    <input name="dir_path" placeholder="p.ej. maze o perfect o C:\ruta\absoluta" style="min-width:22rem">
+    <label>Split</label>
+    <select name="split">
+      <option value="">(inferir por ruta)</option>
+      <option value="perfect">perfect</option>
+      <option value="imperfect">imperfect</option>
+      <option value="maze">maze</option>
+      <option value="unknown">unknown</option>
+    </select>
+    <button type="submit">Convertir</button>
+  </form>
+  <p style="margin:.25rem 0 0 0;"><small>Destino JSON: <code>{{ data_json }}</code></small></p>
+</section>
+
+<section>
+  <h3>Convertidos: {{ json_count }}</h3>
+
+  <form method="get" style="margin:.5rem 0;">
+    <label>Filtrar split</label>
+    <select name="split" onchange="this.form.submit()">
+      <option value="" {% if not split %}selected{% endif %}>(todos)</option>
+      <option value="perfect" {% if split == 'perfect' %}selected{% endif %}>perfect</option>
+      <option value="imperfect" {% if split == 'imperfect' %}selected{% endif %}>imperfect</option>
+      <option value="maze" {% if split == 'maze' %}selected{% endif %}>maze</option>
+      <option value="unknown" {% if split == 'unknown' %}selected{% endif %}>unknown</option>
+    </select>
+  </form>
+
+  <table>
+    <thead><tr><th>ID</th><th>Split</th><th>Tamaño</th><th>Acción</th></tr></thead>
+    <tbody>
+      {% for m in mazes %}
+      <tr>
+        <td><code>{{ m.maze_id }}</code></td>
+        <td>{{ m.split }}</td>
+        <td>{{ m.size.0 }}×{{ m.size.1 }}</td>
+        <td><a href="{% url 'maze_detail' m.maze_id %}" target="_blank">ver</a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4">(No hay JSONs convertidos todavía)</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<p style="margin-top:1rem;">
+  <a href="{% url 'maze_index' %}">Ir a listado de Maze</a>
+</p>
+{% endblock %}

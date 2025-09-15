@@ -7,6 +7,10 @@ from django.conf import settings
 class LMStudioError(Exception):
     pass
 
+CONNECT_TO = getattr(settings, "LMSTUDIO_CONNECT_TIMEOUT", 10)   # seg para conectar
+READ_TO    = getattr(settings, "LMSTUDIO_READ_TIMEOUT", 600)     # seg para leer respuesta
+DEFAULT_TIMEOUT = (CONNECT_TO, READ_TO)
+
 def list_models():
     """
     GET {LMSTUDIO_BASE_URL}/models
@@ -39,7 +43,7 @@ def chat_completion(model: str, messages: list, temperature: float = 0.0, max_to
         "stream": False,
     }
     try:
-        r = requests.post(chat_url, json=chat_payload, timeout=120)
+        r = requests.post(chat_url, json=chat_payload, timeout=DEFAULT_TIMEOUT)
         if r.status_code == 200:
             data = r.json()
             return data["choices"][0]["message"]["content"]

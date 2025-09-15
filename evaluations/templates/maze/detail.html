@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Maze {{ maze_id }}</h2>
+<p>
+  <b>Split:</b> {{ split }} |
+  <b>Tamaño:</b> {{ h }}×{{ w }} |
+  <b>Start:</b> ({{ start.0 }}, {{ start.1 }}) |
+  <b>Goal:</b> ({{ goal.0 }}, {{ goal.1 }})
+</p>
+
+<form method="post" action="{% url 'maze:maze_evaluate' maze_id %}" style="margin: .75rem 0;">
+  {% csrf_token %}
+  <label>Modelo</label>
+  <input name="model_id" value="{{ selected_model }}" required style="min-width: 24rem;">
+  <label style="margin-left: .75rem;">Max steps</label>
+  <input type="number" name="max_steps" value="20" min="10" style="width: 6rem;">
+  <button type="submit" style="margin-left: .5rem;">Evaluar</button>
+</form>
+
+<h3>Preview</h3>
+
+<style>
+  .maze-wrap { --cell: 8px; --w: {{ w }}; }
+  .maze-toolbar { display:flex; gap:.75rem; align-items:center; margin:.75rem 0; }
+  .maze-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--w), var(--cell));
+    grid-auto-rows: var(--cell);
+    gap: 1px;
+    background: #1f2937; /* gris oscuro */
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.25) inset;
+    overflow:auto;
+    max-height: 70vh;
+  }
+  .cell { width: var(--cell); height: var(--cell); border-radius: 2px; }
+  .cell.wall { background: #111827; }          /* pared */
+  .cell.path { background: #e5e7eb; }          /* camino */
+  .cell.start { background: #22c55e; }         /* verde */
+  .cell.goal { background: #ef4444; }          /* rojo */
+  .legend { display:flex; gap:1rem; margin:.5rem 0; font-size:.9rem; color:#9ca3af; }
+  .legend .key { display:inline-block; width:14px; height:14px; border-radius:3px; vertical-align:middle; margin-right:.35rem; }
+</style>
+
+<div class="maze-wrap" id="mazeWrap-{{ maze_id }}" style="--w: {{ w }};">
+  <div class="maze-toolbar">
+    <label>Zoom</label>
+    <input type="range" min="5" max="18" value="8"
+           oninput="document.getElementById('mazeWrap-{{ maze_id }}').style.setProperty('--cell', this.value + 'px')">
+    <div class="legend">
+      <span><span class="key" style="background:#111827"></span>Pared</span>
+      <span><span class="key" style="background:#e5e7eb"></span>Camino</span>
+      <span><span class="key" style="background:#22c55e"></span>Start</span>
+      <span><span class="key" style="background:#ef4444"></span>Goal</span>
+    </div>
+  </div>
+
+  <div class="maze-grid">
+    {% for r in grid %}
+      {% for v in r %}
+        {% with row=forloop.parentloop.counter0 col=forloop.counter0 %}
+          {% if row == start.0 and col == start.1 %}
+            <span class="cell start" title="S"></span>
+          {% elif row == goal.0 and col == goal.1 %}
+            <span class="cell goal" title="G"></span>
+          {% elif v == 0 %}
+            <span class="cell wall"></span>
+          {% else %}
+            <span class="cell path"></span>
+          {% endif %}
+        {% endwith %}
+      {% endfor %}
+    {% endfor %}
+  </div>
+</div>
+
+<p style="margin-top: .75rem;">
+  <a href="{% url 'maze:maze_index' %}">&larr; Volver a Maze</a>
+</p>
+{% endblock %}

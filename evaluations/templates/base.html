@@ -30,6 +30,10 @@
           <a href="{% url 'arc_index' %}" class="{% if request.path|slice:':5' == '/arc/' or request.path == '/arc' %}active{% endif %}">
             Tareas ARC
           </a>
+          <a href="{% url 'maze:maze_index' %}"
+            class="{% if request.path|slice:':6' == '/maze/' or request.path == '/maze' %}active{% endif %}">
+            Tareas Mazes
+          </a>
         </nav>
 
         <hr>

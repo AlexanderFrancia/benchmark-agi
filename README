@@ -9,3 +9,5 @@ Get-ChildItem -Recurse -Directory -Filter __pycache__ | Remove-Item -Recurse -Fo
 Get-ChildItem -Recurse -Include *.pyc,*.pyo | Remove-Item -Force
 
 export PYTHONDONTWRITEBYTECODE=1
+
+https://www.kaggle.com/datasets/mexwell/maze-dataset

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Resultado — {{ maze_id }}</h2>
+<p>
+  <b>Modelo:</b> <code>{{ model_id }}</code> |
+  <b>Split:</b> {{ split }} |
+  <b>Latencia:</b> {{ latency_s }}s
+</p>
+
+<article class="{% if metrics.success == 1.0 %}success{% else %}contrast{% endif %}" style="padding:.75rem; border-radius:8px;">
+  <h3 style="margin:0 0 .5rem 0;">Status: {{ status }}</h3>
+  <ul style="margin:.25rem 0;">
+    <li><b>Success:</b> {{ metrics.success|floatformat:0 }}</li>
+    <li><b>Efficiency:</b> {{ metrics.efficiency|floatformat:2 }}</li>
+    <li><b>Pasos usados:</b> {{ metrics.steps }}</li>
+    <li><b>Camino mínimo:</b> {{ metrics.shortest }}</li>
+  </ul>
+  <div style="margin-top:.5rem;">
+    <label style="display:block; font-size:12px;">Efficiency</label>
+    <progress value="{{ metrics.efficiency }}" max="1" style="width: 320px;"></progress>
+    <span style="margin-left:.5rem;">{{ metrics.efficiency|floatformat:2 }}</span>
+  </div>
+</article>
+
+{% if moves %}
+  <p style="margin-top:.75rem;"><b>Moves:</b> <code>{{ moves }}</code></p>
+{% endif %}
+
+<h3>Maze</h3>
+
+<style>
+  .maze-wrap { --cell: 8px; --w: {{ w }}; position: relative; }
+  .maze-toolbar { display:flex; gap:.75rem; align-items:center; margin:.75rem 0; }
+  .maze-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--w), var(--cell));
+    grid-auto-rows: var(--cell);
+    gap: 1px;
+    background: #1f2937;
+    border-radius: 12px;
+    box-shadow: inset 0 6px 20px rgba(0,0,0,.25);
+    overflow:auto;
+    max-height: 70vh;
+  }
+  .maze-frame { position: relative; }
+  .maze-grid.base { padding: 10px; }
+  .maze-grid.overlay {
+    position: absolute;
+    inset: 0;
+    padding: 10px;           /* Igual que base para alinear celdas */
+    pointer-events: none;
+    background: transparent;
+  }
+
+  .cell { width: var(--cell); height: var(--cell); border-radius: 2px; }
+  .cell.wall { background: #111827; }  /* pared */
+  .cell.path { background: #e5e7eb; }  /* camino */
+  .cell.start { background: #22c55e; } /* verde */
+  .cell.goal  { background: #ef4444; } /* rojo */
+
+  /* Ruta predicha */
+  .cell.pred { background: #3b82f6; opacity: .55; }
+  .cell.pred.head { background: #2563eb; opacity: .9; }
+</style>
+
+<div class="maze-wrap" id="mazeWrap-eval-{{ maze_id }}" style="--w: {{ w }};">
+  <div class="maze-toolbar">
+    <label>Zoom</label>
+    <input type="range" min="5" max="18" value="8"
+           oninput="document.getElementById('mazeWrap-eval-{{ maze_id }}').style.setProperty('--cell', this.value + 'px')">
+  </div>
+
+  <div class="maze-frame">
+    <!-- Capa base (pared/camino/start/goal) -->
+    <div class="maze-grid base">
+      {% for r in grid %}
+        {% for v in r %}
+          {% with row=forloop.parentloop.counter0 col=forloop.counter0 %}
+            {% if row == start.0 and col == start.1 %}
+              <span class="cell start" title="S"></span>
+            {% elif row == goal.0 and col == goal.1 %}
+              <span class="cell goal" title="G"></span>
+            {% elif v == 0 %}
+              <span class="cell wall"></span>
+            {% else %}
+              <span class="cell path"></span>
+            {% endif %}
+          {% endwith %}
+        {% endfor %}
+      {% endfor %}
+    </div>
+
+    <!-- Capa overlay: ruta del LLM -->
+    <div class="maze-grid overlay" id="overlay-{{ maze_id }}"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const overlay = document.getElementById("overlay-{{ maze_id }}");
+  try {
+    const trail = {{ trail_json|safe }} || [];  // [[r,c], ...]
+    for (let i = 0; i < trail.length; i++) {
+      const [r, c] = trail[i];
+      const dot = document.createElement("span");
+      dot.className = "cell pred" + (i === trail.length - 1 ? " head" : "");
+      dot.style.gridRowStart = (r + 1);
+      dot.style.gridColumnStart = (c + 1);
+      overlay.appendChild(dot);
+    }
+  } catch (e) {
+    console.warn("No se pudo pintar la ruta:", e);
+  }
+})();
+</script>
+
+<details style="margin:.75rem 0;">
+  <summary>Raw content</summary>
+  <pre style="white-space:pre-wrap; background:#1b1b1b; color:#ddd; padding:8px; border-radius:8px;">{{ raw_content }}</pre>
+</details>
+
+<p style="margin-top: .75rem;">
+  <a href="{% url 'maze:maze_detail' maze_id %}">&larr; Volver</a> |
+  <a href="{% url 'maze:maze_index' %}">Mazes</a>
+</p>
+{% endblock %}

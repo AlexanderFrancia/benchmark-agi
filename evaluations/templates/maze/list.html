@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Mazes (Kaggle TXT → JSON)</h2>
+<p>Origen convertido: <code>data/maze_converted/</code></p>
+
+{% if lm_error %}
+  <article class="contrast" style="margin:.5rem 0;">
+    <b>LM Studio:</b> {{ lm_error }}
+  </article>
+{% endif %}
+
+<!-- Filtro por split -->
+<form method="get" style="margin:.5rem 0;">
+  <label>Split</label>
+  <select name="split" onchange="this.form.submit()">
+    <option value="" {% if not split %}selected{% endif %}>(todos)</option>
+    <option value="perfect" {% if split == 'perfect' %}selected{% endif %}>perfect</option>
+    <option value="imperfect" {% if split == 'imperfect' %}selected{% endif %}>imperfect</option>
+    <option value="maze" {% if split == 'maze' %}selected{% endif %}>maze</option>
+    <option value="unknown" {% if split == 'unknown' %}selected{% endif %}>unknown</option>
+  </select>
+</form>
+
+<!-- Evaluar dataset completo -->
+<form method="post" action="{% url 'maze:maze_evaluate_dataset' %}" style="margin:.5rem 0; display:flex; gap:.5rem; align-items:center; flex-wrap:wrap;">
+  {% csrf_token %}
+  <label>Modelo</label>
+  {% if models %}
+    <select name="model_id" required style="min-width:24rem;">
+      {% for mid in models %}
+        <option value="{{ mid }}" {% if mid == selected_model %}selected{% endif %}>{{ mid }}</option>
+      {% endfor %}
+    </select>
+  {% else %}
+    <input name="model_id" value="{{ selected_model }}" placeholder="id del modelo en LM Studio" required style="min-width:24rem;">
+  {% endif %}
+
+  <label style="margin-left:.5rem;">Max items</label>
+  <input type="number" name="max_items" value="3000" min="1" style="width:7rem;">
+
+  <label style="margin-left:.5rem;">Max steps</label>
+  <input type="number" name="max_steps" value="300" min="10" style="width:7rem;">
+
+  {% if split %}<input type="hidden" name="split" value="{{ split }}">{% endif %}
+
+  <button type="submit" style="margin-left:.5rem;">Evaluar TODO (secuencial)</button>
+</form>
+
+<!-- Tabla -->
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Split</th>
+      <th>Tamaño</th>
+      <th>Acción</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for m in mazes %}
+      <tr>
+        <td><code>{{ m.maze_id }}</code></td>
+        <td>{{ m.split }}</td>
+        <td>{{ m.size.0 }}×{{ m.size.1 }}</td>
+        <td><a href="{% url 'maze:maze_detail' m.maze_id %}">ver</a></td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="4">
+          No hay mazes convertidos. Ve a
+          <a href="{% url 'maze:maze_tools' %}" target="_blank">🔧 Herramientas Maze</a>
+          y pulsa “Convertir desde carpetas detectadas”.
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
