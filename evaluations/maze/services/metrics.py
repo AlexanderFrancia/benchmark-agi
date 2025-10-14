@@ -1,8 +1,8 @@
-# evaluations/maze/metrics.py
 from typing import Optional, Dict, Any
 
 from .moves import shortest_path_len, simulate_moves
-
+from evaluations.core.metrics_extended import *
+import numpy as np
 def compare_maze(
     grid: list[list[int]],
     start: tuple[int, int],
@@ -53,3 +53,21 @@ def compare_maze(
     except Exception:
         # Ante cualquier excepción, retornar métricas neutras
         return {"success": 0.0, "efficiency": 0.0, "steps": 0, "shortest": 0}
+
+def efficiency(shortest, used):
+    if shortest == 0 or used == 0:
+        return 0.0
+    return min(1.0, shortest / used)
+
+def success(reached):
+    return 1.0 if reached else 0.0
+
+def compute_maze_metrics(expected_grid, predicted_grid, shortest, used, reached):
+    return {
+        "cell_accuracy": cell_accuracy(expected_grid, predicted_grid),
+        "local_consistency": local_consistency(expected_grid, predicted_grid),
+        "entropy_diff": entropy_diff(expected_grid, predicted_grid),
+        "structural_similarity": structural_similarity(expected_grid, predicted_grid),
+        "efficiency": efficiency(shortest, used),
+        "success": success(reached),
+    }

@@ -6,7 +6,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
-from .services import load_task, build_loo_messages, compare_grids, list_tasks
+from .services import load_task, build_loo_messages, compare_grids, list_tasks, compute_arc_metrics
 from ..core import list_models, chat_completion, LMStudioError, extract_matrix
 from ..runs import EvaluationRun, EvaluationResult
 
@@ -88,6 +88,12 @@ def evaluate(request, task_id: str):
             metrics["cell_accuracy_pct"] = metrics["cell_accuracy"] * 100
             exact = metrics["exact_match"] == 1.0
             status = "ACIERTO" if exact else "FALLO"
+            ext_metrics = compute_arc_metrics(
+                input_grid=messages[0]["content"] if messages else None,
+                expected=expected,
+                predicted=predicted,
+            )
+            metrics.update(ext_metrics)
         except ValueError as e:
             predicted = None
             metrics = compare_grids(expected, None)

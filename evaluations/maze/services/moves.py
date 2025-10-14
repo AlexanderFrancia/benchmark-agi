@@ -1,4 +1,6 @@
 from collections import deque
+
+import numpy as np
 def shortest_path_len(grid, start, goal):
     """
     BFS en 4 direcciones para obtener la longitud del camino más corto.
@@ -88,21 +90,36 @@ def simulate_moves(grid, start, goal, moves: str):
 
 def compute_trail(grid, start, moves: str):
     """
-    Devuelve la secuencia de celdas visitadas [(r,c), ...] al seguir moves (UDLR).
-    Se detiene si sale del mapa o pisa pared.
+    Genera el recorrido (trail) del agente y devuelve:
+      - trail: lista [(r,c), ...]
+      - trail_grid: matriz con los pasos marcados como 2
     """
-    h = len(grid); w = len(grid[0]) if h else 0
+    h, w = len(grid), len(grid[0])
+    trail = [tuple(start)]
     r, c = start
-    trail = [(r, c)]
-    valid = True
-    for ch in (moves or ""):
-        if ch == "U": r -= 1
-        elif ch == "D": r += 1
-        elif ch == "L": c -= 1
-        elif ch == "R": c += 1
+
+    # Creamos copia del grid original
+    trail_grid = np.array(grid, dtype=int).copy()
+
+    # Simulación de movimientos
+    for mv in moves:
+        if mv == "U":
+            r -= 1
+        elif mv == "D":
+            r += 1
+        elif mv == "L":
+            c -= 1
+        elif mv == "R":
+            c += 1
+        # verificamos límites
+        if 0 <= r < h and 0 <= c < w:
+            trail.append((r, c))
+            if trail_grid[r, c] == 1:  # camino libre
+                trail_grid[r, c] = 2   # marca recorrido
         else:
-            valid = False; break
-        trail.append((r, c))
-        if not (0 <= r < h and 0 <= c < w) or grid[r][c] == 0:
-            valid = False; break
-    return {"trail": trail, "valid": valid}
+            break  # si sale de los límites, detener recorrido
+
+    return {
+        "trail": trail,
+        "trail_grid": trail_grid.tolist(),
+    }

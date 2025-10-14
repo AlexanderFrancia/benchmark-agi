@@ -11,7 +11,7 @@ from evaluations.core.lmstudio import (
     chat_completion,
     LMStudioError,
 )
-from .services.metrics import compare_maze
+from .services.metrics import compare_maze, compute_maze_metrics
 from .services.maze import (
     list_mazes,
     load_maze,
@@ -101,6 +101,14 @@ def maze_evaluate(request, maze_id: str):
             status = "ACIERTO" if metrics["success"] == 1.0 else "FALLO"
             trail_info = compute_trail(grid, start, moves)
             trail = trail_info["trail"]
+            ext_metrics = compute_maze_metrics(
+                expected_grid=grid,
+                predicted_grid=trail_info["trail_grid"],
+                shortest=metrics.get("shortest", 0),
+                used=metrics.get("steps", 0),
+                reached=(metrics.get("success", 0.0) == 1.0)
+            )
+            metrics.update(ext_metrics)
         else:
             metrics = {
                 "success": 0.0, "efficiency": 0.0, "steps": 0,
@@ -116,7 +124,7 @@ def maze_evaluate(request, maze_id: str):
             "success": 0.0, "efficiency": 0.0, "steps": 0,
             "shortest": shortest_path_len(grid, start, goal) or 0
         }
-        status = "SIN RESPUESTA"
+        status = content
         trail = []
 
     # 4) Render

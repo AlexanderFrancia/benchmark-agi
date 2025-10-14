@@ -22,6 +22,21 @@
   </div>
 </article>
 
+<section style="margin-top: 1.5rem;">
+  <h3>Métricas extendidas</h3>
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
+    {% for key, val in metrics.items %}
+      {% if key not in "success,efficiency,steps,shortest" %}
+        <div style="background:#1f2937; padding:.75rem; border-radius:8px; color:#e5e7eb;">
+          <b>{{ key|title }}</b><br>
+          <progress value="{{ val }}" max="1" style="width:100%; height:8px;"></progress>
+          <span style="font-size:.9rem;">{{ val|floatformat:3 }}</span>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
 {% if moves %}
   <p style="margin-top:.75rem;"><b>Moves:</b> <code>{{ moves }}</code></p>
 {% endif %}
