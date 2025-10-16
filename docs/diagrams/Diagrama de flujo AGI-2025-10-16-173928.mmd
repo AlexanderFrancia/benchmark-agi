@@ -1,0 +1,49 @@
+flowchart TB
+  classDef ui fill:#eef6ff,stroke:#1d4ed8,color:#1d4ed8,stroke-width:2px
+  classDef core fill:#f5f3ff,stroke:#6d28d9,color:#5b21b6,stroke-width:2px
+  classDef module fill:#ecfeff,stroke:#0e7490,color:#0e7490,stroke-width:2px
+  classDef metrics fill:#fefce8,stroke:#a16207,color:#854d0e,stroke-width:2px
+  classDef storage fill:#fef2f2,stroke:#b91c1c,color:#7f1d1d,stroke-width:2px
+  classDef dash fill:#eff6ff,stroke:#2563eb,color:#1e40af,stroke-width:2px
+  classDef decision fill:#fef3c7,stroke:#d97706,color:#92400e,stroke-width:2px
+  classDef start fill:#f0fdf4,stroke:#15803d,color:#166534,stroke-width:3px
+  classDef final fill:#fef2f2,stroke:#b91c1c,color:#7f1d1d,stroke-width:3px
+
+  START((INICIO)):::start
+  START --> A[1. Cargue de Interfaz de usuario]:::ui
+  A --> C{LM Studio disponible}:::decision
+
+  C -->|NO| END1((FIN)):::final
+  
+  C -->|SI| MODULO_SEL{Seleccionar modulo}:::decision
+
+  MODULO_SEL -->|ARC| ARC_LOAD[2A. Cargar lista de puzzles]:::module
+  MODULO_SEL -->|MAZE| MAZE_LOAD[2B. Cargar lista de laberintos]:::module
+
+  ARC_LOAD --> TASK_SEL{3. Ejecutar}:::decision
+  MAZE_LOAD --> TASK_SEL
+  
+  TASK_SEL -->|Una tarea| SEL_ONE[Seleccionar tarea]:::ui
+  TASK_SEL -->|Todas| SEL_ALL[Ejecutar todas]:::ui
+
+  SEL_ONE --> EXEC[4. Ejecutar tarea con LM Studio]:::core
+  SEL_ALL --> EXEC
+
+  EXEC --> CHECK{Respuesta correcta}:::decision
+  
+  CHECK -->|SI| CALC_MET[5. Calcular metricas]:::metrics
+  CHECK -->|NO| RETRY{Reintentos disponibles}:::decision
+  
+  RETRY -->|SI| EXEC
+  RETRY -->|NO| ZERO[Metricas 0]:::metrics
+  
+  CALC_MET --> SAVE[6. Guardar resultado]:::storage
+  ZERO --> SAVE
+  
+  SAVE --> MORE{Mas tareas pendientes}:::decision
+  MORE -->|SI| EXEC
+  MORE -->|NO| EXPORT[7. Exportar resultados]:::storage
+
+  EXPORT --> DSH[8. Dashboard Power BI]:::dash
+
+  DSH --> FINAL((FIN)):::final

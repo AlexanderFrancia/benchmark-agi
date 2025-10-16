@@ -1,0 +1,209 @@
+graph TB
+  classDef presentation fill:#dbeafe,stroke:#1e40af,color:#1e3a8a,stroke-width:2px
+  classDef business fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px
+  classDef data fill:#fef3c7,stroke:#d97706,color:#78350f,stroke-width:2px
+  classDef integration fill:#e9d5ff,stroke:#9333ea,color:#581c87,stroke-width:2px
+  classDef storage fill:#fecaca,stroke:#dc2626,color:#7f1d1d,stroke-width:2px
+  classDef config fill:#f3f4f6,stroke:#6b7280,color:#1f2937,stroke-width:2px
+  classDef utils fill:#fef9c3,stroke:#ca8a04,color:#713f12,stroke-width:2px
+
+  subgraph LAYER1 ["═══ CAPA DE PRESENTACIÓN ═══"]
+    direction TB
+    
+    subgraph UI_LAYER ["🖥️ Interfaz de Usuario"]
+      direction TB
+      TEMPLATES["📄 Django Templates<br/><small>HTML/CSS/JavaScript</small>"]:::presentation
+      VIEWS["👁️ Views<br/><small>Renderizado de Páginas</small>"]:::presentation
+      FORMS["📝 Forms<br/><small>Validación de Entrada</small>"]:::presentation
+    end
+    
+    subgraph API_LAYER ["🔌 API Layer"]
+      direction TB
+      REST_ENDPOINTS["🌐 REST Endpoints<br/><small>Django REST Framework</small>"]:::presentation
+      SERIALIZERS["📋 Serializers<br/><small>Transformación de Datos</small>"]:::presentation
+    end
+  end
+
+  subgraph LAYER2 ["═══ CAPA DE LÓGICA DE NEGOCIO (Python) ═══"]
+    direction TB
+    
+    subgraph ORCHESTRATION ["🎯 Orquestación"]
+      MAIN_CONTROLLER["⚙️ Main Controller<br/><small>Coordinador Principal</small>"]:::business
+      TASK_MANAGER["📊 Task Manager<br/><small>Gestión de Tareas</small>"]:::business
+      STATE_MANAGER["💾 State Manager<br/><small>Control de Estado</small>"]:::business
+    end
+    
+    subgraph MODULE_ARC ["🧩 MÓDULO ARC"]
+      direction TB
+      ARC_CONTROLLER["🎮 ARC Controller<br/><small>Controlador ARC</small>"]:::business
+      ARC_LOADER["📥 Dataset Loader<br/><small>Carga de Puzzles</small>"]:::business
+      ARC_PARSER["🔍 JSON Parser<br/><small>Parseo de Datos</small>"]:::business
+      ARC_VALIDATOR["✅ Validator<br/><small>Validación Puzzles</small>"]:::business
+      ARC_EXECUTOR["▶️ Task Executor<br/><small>Ejecución con Reintentos</small>"]:::business
+      ARC_METRICS["📊 Metrics Engine<br/><small>cell_accuracy, region_accuracy<br/>delta_accuracy, structural_similarity</small>"]:::business
+    end
+    
+    subgraph MODULE_MAZE ["🌀 MÓDULO MAZE"]
+      direction TB
+      MAZE_CONTROLLER["🎮 MAZE Controller<br/><small>Controlador MAZE</small>"]:::business
+      MAZE_LOADER["📥 Dataset Loader<br/><small>Carga de Laberintos</small>"]:::business
+      MAZE_PARSER["🔍 JSON Parser<br/><small>Parseo de Datos</small>"]:::business
+      MAZE_VALIDATOR["✅ Validator<br/><small>Validación Conectividad</small>"]:::business
+      MAZE_EXECUTOR["▶️ Task Executor<br/><small>Ejecución con Reintentos</small>"]:::business
+      MAZE_METRICS["📊 Metrics Engine<br/><small>cell_accuracy, local_consistence<br/>entropy_difference, structural_similarity</small>"]:::business
+    end
+    
+    subgraph COMMON_SERVICES ["🔧 Servicios Comunes"]
+      direction TB
+      RETRY_LOGIC["🔄 Retry Handler<br/><small>Lógica de Reintentos (max 3)</small>"]:::utils
+      ERROR_HANDLER["⚠️ Error Handler<br/><small>Gestión de Errores</small>"]:::utils
+      LOGGER["📝 Logger<br/><small>Sistema de Logs</small>"]:::utils
+      CACHE_MANAGER["⚡ Cache Manager<br/><small>Caché en Memoria</small>"]:::utils
+    end
+  end
+
+  subgraph LAYER3 ["═══ CAPA DE INTEGRACIÓN ═══"]
+    direction TB
+    
+    subgraph LM_INTEGRATION ["🤖 Integración LM Studio"]
+      direction TB
+      LM_CLIENT["🌐 HTTP Client<br/><small>requests/httpx</small>"]:::integration
+      PROMPT_BUILDER["💬 Prompt Builder<br/><small>Constructor Multirol</small>"]:::integration
+      ROLE_AMBIENT["🌍 Ambient Role<br/><small>Contexto y Restricciones</small>"]:::integration
+      ROLE_ACTION["⚡ Action Role<br/><small>Resolver y Traza</small>"]:::integration
+      RESPONSE_PARSER["📄 Response Parser<br/><small>Parseo de Respuestas</small>"]:::integration
+    end
+    
+    subgraph BI_INTEGRATION ["📈 Integración Power BI"]
+      direction TB
+      BI_CONNECTOR["🔗 BI Connector<br/><small>Conexión Power BI</small>"]:::integration
+      DATA_TRANSFORMER["🔄 Data Transformer<br/><small>Transformación para BI</small>"]:::integration
+    end
+    
+    subgraph HEALTH_CHECK ["🏥 Health Check"]
+      LM_HEALTH["✅ LM Studio Health<br/><small>Validación de Disponibilidad</small>"]:::integration
+    end
+  end
+
+  subgraph LAYER4 ["═══ CAPA DE PERSISTENCIA ═══"]
+    direction TB
+    
+    subgraph ORM_LAYER ["🗃️ ORM Layer"]
+      direction TB
+      DJANGO_ORM["⚙️ Django ORM<br/><small>Object-Relational Mapping</small>"]:::data
+      MODELS["📐 Models<br/><small>Run, Metrics, Task</small>"]:::data
+      MIGRATIONS["🔄 Migrations<br/><small>Gestión de Esquema</small>"]:::data
+    end
+    
+    subgraph DATA_ACCESS ["💾 Data Access Layer"]
+      direction TB
+      RUN_REPO["📊 Run Repository<br/><small>CRUD Ejecuciones</small>"]:::data
+      METRICS_REPO["📈 Metrics Repository<br/><small>CRUD Métricas</small>"]:::data
+      EXPORT_SERVICE["📤 Export Service<br/><small>Generación CSV</small>"]:::data
+    end
+  end
+
+  subgraph LAYER5 ["═══ CAPA DE ALMACENAMIENTO ═══"]
+    direction TB
+    
+    subgraph DATABASES ["🗄️ Bases de Datos"]
+      direction LR
+      DB_SQLITE[("💽 SQLite<br/><small>Desarrollo</small>")]:::storage
+      DB_POSTGRES[("🐘 PostgreSQL<br/><small>Producción</small>")]:::storage
+    end
+    
+    subgraph FILES ["📁 Sistema de Archivos"]
+      direction TB
+      JSON_FILES["📄 JSON Files<br/><small>/data/arc/arc.json<br/>/data/maze/maze.json</small>"]:::storage
+      CSV_EXPORTS["📊 CSV Exports<br/><small>/exports/*.csv</small>"]:::storage
+      LOGS_FILES["📝 Log Files<br/><small>/logs/*.log</small>"]:::storage
+    end
+  end
+
+  subgraph LAYER6 ["═══ SERVICIOS EXTERNOS ═══"]
+    direction LR
+    LM_STUDIO_SERVER["🤖 LM Studio Server<br/><small>localhost:PORT<br/>API OpenAI Compatible</small>"]:::integration
+    POWERBI_DESKTOP["📊 Power BI Desktop<br/><small>Visualización y Reportes</small>"]:::integration
+  end
+
+  subgraph CONFIG_LAYER ["⚙️ CONFIGURACIÓN"]
+    direction TB
+    ENV_FILE["🔐 .env File<br/><small>Variables de Entorno</small>"]:::config
+    SETTINGS["⚙️ Django Settings<br/><small>Configuración App</small>"]:::config
+    REQUIREMENTS["📦 requirements.txt<br/><small>Dependencias Python</small>"]:::config
+  end
+
+  TEMPLATES --> VIEWS
+  FORMS --> VIEWS
+  VIEWS --> MAIN_CONTROLLER
+  REST_ENDPOINTS --> SERIALIZERS
+  SERIALIZERS --> MAIN_CONTROLLER
+
+  MAIN_CONTROLLER --> TASK_MANAGER
+  MAIN_CONTROLLER --> STATE_MANAGER
+  MAIN_CONTROLLER --> LM_HEALTH
+  
+  TASK_MANAGER --> ARC_CONTROLLER
+  TASK_MANAGER --> MAZE_CONTROLLER
+  
+  ARC_CONTROLLER --> ARC_LOADER
+  ARC_LOADER --> ARC_PARSER
+  ARC_PARSER --> ARC_VALIDATOR
+  ARC_VALIDATOR --> ARC_EXECUTOR
+  ARC_EXECUTOR --> RETRY_LOGIC
+  ARC_EXECUTOR --> PROMPT_BUILDER
+  ARC_EXECUTOR --> ARC_METRICS
+  
+  MAZE_CONTROLLER --> MAZE_LOADER
+  MAZE_LOADER --> MAZE_PARSER
+  MAZE_PARSER --> MAZE_VALIDATOR
+  MAZE_VALIDATOR --> MAZE_EXECUTOR
+  MAZE_EXECUTOR --> RETRY_LOGIC
+  MAZE_EXECUTOR --> PROMPT_BUILDER
+  MAZE_EXECUTOR --> MAZE_METRICS
+  
+  ARC_LOADER --> JSON_FILES
+  MAZE_LOADER --> JSON_FILES
+  
+  PROMPT_BUILDER --> ROLE_AMBIENT
+  PROMPT_BUILDER --> ROLE_ACTION
+  ROLE_AMBIENT --> LM_CLIENT
+  ROLE_ACTION --> LM_CLIENT
+  LM_CLIENT --> LM_STUDIO_SERVER
+  LM_STUDIO_SERVER --> RESPONSE_PARSER
+  RESPONSE_PARSER --> ARC_EXECUTOR
+  RESPONSE_PARSER --> MAZE_EXECUTOR
+  
+  ARC_METRICS --> RUN_REPO
+  MAZE_METRICS --> METRICS_REPO
+  
+  RUN_REPO --> DJANGO_ORM
+  METRICS_REPO --> DJANGO_ORM
+  DJANGO_ORM --> MODELS
+  MODELS --> MIGRATIONS
+  
+  DJANGO_ORM --> DB_SQLITE
+  DJANGO_ORM --> DB_POSTGRES
+  
+  METRICS_REPO --> EXPORT_SERVICE
+  EXPORT_SERVICE --> CSV_EXPORTS
+  
+  CSV_EXPORTS --> BI_CONNECTOR
+  DB_POSTGRES --> DATA_TRANSFORMER
+  DATA_TRANSFORMER --> BI_CONNECTOR
+  BI_CONNECTOR --> POWERBI_DESKTOP
+  
+  RETRY_LOGIC --> ERROR_HANDLER
+  ERROR_HANDLER --> LOGGER
+  LOGGER --> LOGS_FILES
+  
+  ARC_LOADER --> CACHE_MANAGER
+  MAZE_LOADER --> CACHE_MANAGER
+  
+  LM_HEALTH --> LM_CLIENT
+  
+  ENV_FILE -.->|config| SETTINGS
+  SETTINGS -.->|config| MAIN_CONTROLLER
+  SETTINGS -.->|config| DJANGO_ORM
+  SETTINGS -.->|config| LM_CLIENT
+  REQUIREMENTS -.->|dependencies| MAIN_CONTROLLER

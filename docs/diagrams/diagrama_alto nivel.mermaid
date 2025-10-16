@@ -1,0 +1,38 @@
+graph TB
+  classDef presentation fill:#dbeafe,stroke:#1e40af,color:#1e3a8a,stroke-width:3px
+  classDef core fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:3px
+  classDef data fill:#fef3c7,stroke:#d97706,color:#78350f,stroke-width:3px
+  classDef external fill:#e9d5ff,stroke:#9333ea,color:#581c87,stroke-width:3px
+  classDef storage fill:#fecaca,stroke:#dc2626,color:#7f1d1d,stroke-width:3px
+
+  UI["🌐 Django Web UI<br/><small>Templates & Views</small>"]:::presentation
+
+  CONTROLLER["🎯 Controller<br/><small>Orquestador Principal - Python</small>"]:::core
+  
+  ARC_MOD["🧩 Módulo ARC<br/><small>Evaluación ARC - Python</small>"]:::core
+  MAZE_MOD["🌀 Módulo MAZE<br/><small>Evaluación MAZE - Python</small>"]:::core
+
+  JSON_ARC["📄 arc.json<br/><small>ARC Dataset</small>"]:::storage
+  JSON_MAZE["📄 maze.json<br/><small>MAZE Dataset</small>"]:::storage
+
+  LM_STUDIO["🤖 LM Studio Server<br/><small>localhost:PORT</small>"]:::external
+  
+  DB[("🗄️ Base de Datos<br/><small>SQLite/PostgreSQL</small>")]:::storage
+  
+  POWERBI["📈 Power BI<br/><small>Visualización</small>"]:::external
+
+  UI --> CONTROLLER
+  
+  CONTROLLER --> ARC_MOD
+  CONTROLLER --> MAZE_MOD
+  
+  ARC_MOD --> JSON_ARC
+  MAZE_MOD --> JSON_MAZE
+  
+  ARC_MOD --> LM_STUDIO
+  MAZE_MOD --> LM_STUDIO
+  
+  ARC_MOD --> DB
+  MAZE_MOD --> DB
+  
+  DB --> POWERBI

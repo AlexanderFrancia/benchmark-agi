@@ -1,0 +1,53 @@
+sequenceDiagram
+    participant U as Usuario
+    participant UI as Interfaz Web
+    participant SYS as Sistema
+    participant LM as LM Studio
+    participant DB as Base de Datos
+    participant PBI as Power BI
+
+    U->>UI: Acceder al sistema
+    UI->>SYS: Inicializar
+    
+    SYS->>LM: Verificar disponibilidad
+    
+    alt LM Studio no disponible
+        LM-->>SYS: No disponible
+        SYS-->>UI: Error
+        UI-->>U: Mostrar error
+    else LM Studio disponible
+        LM-->>SYS: Disponible
+        
+        U->>UI: Seleccionar módulo y tareas
+        UI->>SYS: Procesar solicitud
+        
+        SYS->>SYS: Cargar datos
+        
+        loop Para cada tarea seleccionada
+            SYS->>LM: Enviar tarea
+            LM-->>SYS: Respuesta
+            
+            alt Respuesta válida
+                SYS->>SYS: Calcular métricas
+            else Respuesta inválida y hay reintentos
+                SYS->>LM: Reintentar (max 3)
+            else Sin reintentos
+                SYS->>SYS: Asignar métricas a 0
+            end
+            
+            SYS->>DB: Guardar resultado
+            SYS-->>UI: Actualizar progreso
+        end
+        
+        SYS->>DB: Exportar a CSV
+        DB-->>SYS: Archivo generado
+        
+        SYS-->>UI: Proceso completado
+        UI-->>U: Mostrar resultados y opciones
+        
+        U->>UI: Visualizar en Power BI
+        UI->>PBI: Conectar con datos
+        PBI->>DB: Consultar resultados
+        DB-->>PBI: Datos
+        PBI-->>U: Dashboard con visualizaciones
+    end
