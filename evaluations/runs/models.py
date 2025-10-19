@@ -2,7 +2,6 @@ from django.db import models
 import uuid
 
 class EvaluationRun(models.Model):
-    # (campos como ya los tienes)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     model_id = models.CharField(max_length=255)
     started_at = models.DateTimeField(auto_now_add=True)
